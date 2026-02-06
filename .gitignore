@@ -1,17 +1,23 @@
 node_modules/
+
+# env (절대 업로드 금지)
 .env
 .env.local
 .env.*.local
+
+# build
 dist/
 build/
-.vscode/
-.idea/
+
+# OS / editor
 .DS_Store
 Thumbs.db
+.vscode/
+.idea/
+
+# db & outputs (원하면 유지/삭제 선택)
 *.db
 *.sqlite
 *.sqlite3
-todos.db
-database.db
-todos_data.json
 db_output.txt
+todos_data.json
