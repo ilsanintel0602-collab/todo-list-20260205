@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium To-Do List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="header-top-row">
+                <div class="header-content">
+                    <h1>My Tasks</h1>
+                    <p id="date-display">Today's Goals</p>
+                </div>
+
+                <div class="header-controls">
+                    <!-- History and Date Picker Side by Side -->
+                    <div class="header-actions">
+                        <div class="history-filter-compact">
+                            <details id="history-details">
+                                <summary><i class="fas fa-history"></i> 기록 조회</summary>
+                                <div class="filter-popup">
+                                    <div class="filter-group">
+                                        <label>시작일</label>
+                                        <input type="date" id="filter-start">
+                                    </div>
+                                    <div class="filter-group">
+                                        <label>종료일</label>
+                                        <input type="date" id="filter-end">
+                                    </div>
+                                    <div class="filter-actions">
+                                        <button id="search-btn">조회하기</button>
+                                        <button id="reset-search-btn">초기화</button>
+                                    </div>
+                                </div>
+                            </details>
+                        </div>
+
+                        <div class="date-picker-wrapper">
+                            <label for="task-date"><i class="far fa-calendar-alt"></i> 목표 날짜</label>
+                            <input type="date" id="task-date">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="input-group">
+            <select id="priority-select" title="중요도">
+                <option value="low">낮음</option>
+                <option value="medium">보통</option>
+                <option value="high">높음</option>
+            </select>
+            <input type="text" id="task-input" placeholder="할 일 입력" autocomplete="off">
+            <button id="add-btn"><i class="fas fa-plus"></i></button>
+        </div>
+
+        <div class="list-header">
+            <span>확인</span>
+            <span>할 일 / 입력시간</span>
+            <span>목표 날짜</span>
+        </div>
+
+        <ul id="task-list" class="task-list">
+            <!-- Active Tasks -->
+        </ul>
+
+        <div class="completed-section">
+            <h5 class="section-title">완료됨 (Completed)</h5>
+            <ul id="completed-list" class="task-list completed-list">
+                <!-- Completed Tasks -->
+            </ul>
+        </div>
+
+        <div class="footer-info">
+            <span id="task-count">Loading...</span>
+            <button id="clear-completed">Clear</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
