@@ -8,3 +8,10 @@ build/
 .idea/
 .DS_Store
 Thumbs.db
+*.db
+*.sqlite
+*.sqlite3
+todos.db
+database.db
+todos_data.json
+db_output.txt
