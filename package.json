@@ -1,20 +1,18 @@
 {
-    "name": "premium-todo-app",
-    "version": "1.0.0",
-    "description": "Premium To-Do List with Node.js Backend",
-    "main": "server.js",
-    "scripts": {
-        "start": "node server.js"
-    },
-   "dependencies": {
-  "cors": "^2.8.5",
-  "express": "^4.18.2",
-  "sqlite3": "^5.1.6",
-  "dotenv": "^17.2.4",
-  "express-session": "^1.18.2",
-  "passport": "^0.7.0",
-  "passport-google-oauth20": "^2.0.0"
-}
-
-    }
+  "name": "premium-todo-app",
+  "version": "1.0.0",
+  "description": "Premium To-Do List with Node.js Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.4",
+    "express": "^4.18.2",
+    "express-session": "^1.18.2",
+    "passport": "^0.7.0",
+    "passport-google-oauth20": "^2.0.0",
+    "sqlite3": "^5.1.6"
+  }
 }
