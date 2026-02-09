@@ -149,6 +149,15 @@ app.delete('/api/tasks/:id', (req, res) => {
 app.get('/health', (req, res) => {
   res.json({ ok: true });
 });
+// Google 로그인 시작
+app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+
+// Google 로그인 콜백
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => res.redirect("/")
+);
 
 // Start Server
 app.listen(PORT, '0.0.0.0', () => console.log(`Server on ${PORT}`));
