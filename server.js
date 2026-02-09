@@ -146,6 +146,9 @@ app.delete('/api/tasks/:id', (req, res) => {
         res.json({ "message": "deleted", changes: this.changes });
     });
 });
+app.get('/health', (req, res) => {
+  res.json({ ok: true });
+});
 
 // Start Server
 app.listen(PORT, '0.0.0.0', () => console.log(`Server on ${PORT}`));
