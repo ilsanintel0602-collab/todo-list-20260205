@@ -1,9 +1,65 @@
+require('dotenv').config();
+const passport = require('passport');
+//console.log("ENV GOOGLE_CLIENT_ID:", process.env.207621750313 - aph8ea1vv4b8llvp8424kaa6c54b3ru9.apps.googleusercontent.com);
+//console.log("ENV GOOGLE_CALLBACK_URL:", process.env.)http://localhost:3001/auth/google/callback;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+const session = require('express-session');
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 const path = require('path');
 
 const app = express();
+app.set('trust proxy', 1); // 배포 환경 대비(쿠키/프록시 문제 줄임)
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+    }
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+// ✅ Passport Google Strategy 설정
+passport.use(
+    new GoogleStrategy(
+        {
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            callbackURL: process.env.GOOGLE_CALLBACK_URL || "/auth/google/callback",
+        },
+        (accessToken, refreshToken, profile, done) => {
+            const user = {
+                id: profile.id,
+                displayName: profile.displayName,
+                email: profile.emails?.[0]?.value || "",
+                photo: profile.photos?.[0]?.value || "",
+            };
+            done(null, user);
+        }
+    )
+);
+
+// ✅ 세션에 사용자 저장/복원SS
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || "http://localhost:3001/auth/google/callback",
+
+}, (accessToken, refreshToken, profile, done) => {
+    return done(null, profile);
+}));
+
+
+
 const PORT = process.env.PORT || 3001;
 
 // Middleware
@@ -12,7 +68,10 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname))); // Serve static files (index.html, css, js)
 
 // Database Setup
-const db = new sqlite3.Database('./database.db', (err) => {
+const DB_PATH = path.resolve(__dirname, 'database.db');
+console.log('✅ SQLite DB 경로:', DB_PATH);
+const db = new sqlite3.Database(DB_PATH, (err) => {
+
     if (err) {
         console.error('Error opening database ' + err.message);
     } else {
@@ -35,8 +94,25 @@ const db = new sqlite3.Database('./database.db', (err) => {
         });
     }
 });
+app.get('/health', (req, res) => {
+    req.session.views = (req.session.views || 0) + 1;
+    res.json({ ok: true, views: req.session.views });
+});
 
 // API Endpoints
+app.get('/auth/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+    passport.authenticate('google', { failureRedirect: '/' }),
+    (req, res) => res.redirect('/')
+);
+
+app.get('/me', (req, res) => {
+    if (!req.user) return res.status(401).json({ ok: false });
+    res.json({ ok: true, user: req.user });
+});
 
 // GET all tasks
 app.get('/api/tasks', (req, res) => {
@@ -147,5 +223,34 @@ app.delete('/api/tasks/:id', (req, res) => {
     });
 });
 
-// Start Server
-app.listen(PORT, '0.0.0.0', () => console.log(`Server on ${PORT}`));
+// ✅ Google 로그인 시작
+app.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
+
+// ✅ Google 로그인 콜백
+app.get(
+    "/auth/google/callback",
+    passport.authenticate("google", { failureRedirect: "/" }),
+    (req, res) => res.redirect("/")
+);
+
+// ✅ 로그인 상태 확인(테스트용)
+app.get("/auth/me", (req, res) => {
+    if (req.user) return res.json({ ok: true, user: req.user });
+    return res.json({ ok: false, user: null });
+});
+
+// ✅ 로그아웃
+app.get("/auth/logout", (req, res) => {
+    req.logout(() => {
+        req.session.destroy(() => res.redirect("/"));
+    });
+});
+// Start ServerS
+
+app.get('/health', (req, res) => {
+    req.session.views = (req.session.views || 0) + 1;
+    res.json({ ok: true, views: req.session.views });
+});
+app.listen(PORT, () => {
+    console.log(`Server on ${PORT}`);
+});
