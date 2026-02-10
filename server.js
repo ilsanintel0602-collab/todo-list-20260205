@@ -5,13 +5,29 @@ const path = require('path');
 const passport = require("passport");
 
 const app = express();
+const session = require("express-session");
+
 const PORT = process.env.PORT || 3001;
 
 // Middleware
+app.set("trust proxy", 1);
+
+// ✅ 세션 먼저
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false
+}));
+
+// ✅ 그 다음 passport
 app.use(passport.initialize());
 app.use(passport.session());
 
+// 기타 미들웨어
 app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname)));
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname))); // Serve static files (index.html, css, js)
 
